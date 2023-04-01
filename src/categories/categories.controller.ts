@@ -8,8 +8,14 @@ import {
   ValidationPipe,
   Param,
 } from '@nestjs/common';
+import { Types } from 'mongoose';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDto, UpdateCategoryDto } from './category.dto';
+import {
+  CreateCategoryDto,
+  CreateProductDto,
+  UpdateCategoryDto,
+  UpdateProductDto,
+} from './category.dto';
 import { Category } from './category.schema';
 
 @Controller('categories')
@@ -39,5 +45,29 @@ export class CategoriesController {
     @Body() data: UpdateCategoryDto,
   ): Promise<Category> {
     return this.categoryService.update(id, data);
+  }
+
+  @Post(':categoryId/products')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async addProductToCategory(
+    @Param('categoryId') categoryId: string,
+    @Body() createProductDto: CreateProductDto,
+  ) {
+    const newProduct = {
+      ...createProductDto,
+      _id: new Types.ObjectId(),
+    };
+
+    return this.categoryService.createProduct(categoryId, newProduct);
+  }
+
+  @Patch(':categoryId/products/:productId')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  updateProduct(
+    @Param('categoryId') categoryId: string,
+    @Param('productId') productId: string,
+    @Body() data: UpdateProductDto,
+  ): Promise<Category> {
+    return this.categoryService.updateProduct(categoryId, productId, data);
   }
 }

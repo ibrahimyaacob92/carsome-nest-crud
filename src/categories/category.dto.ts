@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
-import { Types } from 'mongoose';
+import { IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 export class CreateCategoryDto {
   @IsNotEmpty()
   name: string;
@@ -14,4 +13,34 @@ export class UpdateCategoryDto {
 
   @IsOptional()
   description: string;
+}
+
+export class CreateProductDto {
+  @IsNotEmpty()
+  name: string;
+
+  @IsNotEmpty()
+  description: string;
+
+  @IsNotEmpty()
+  price: string;
+
+  @IsNotEmpty()
+  quantity: string;
+}
+
+export class UpdateProductDto {
+  @IsNotEmpty()
+  name: string;
+
+  @IsNotEmpty()
+  description: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  price: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  quantity: string;
 }
