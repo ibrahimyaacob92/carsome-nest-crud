@@ -29,7 +29,7 @@ export class CategoriesController {
     return this.categoryService.findAll();
   }
 
-  @Get('id/:id')
+  @Get(':id')
   getCategoryById(@Param('id') id: string): Promise<Category> {
     return this.categoryService.findById(id);
   }
