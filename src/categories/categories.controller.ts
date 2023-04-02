@@ -7,6 +7,8 @@ import {
   Patch,
   ValidationPipe,
   Param,
+  Delete,
+  Query,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { CategoriesService } from './categories.service';
@@ -27,7 +29,7 @@ export class CategoriesController {
     return this.categoryService.findAll();
   }
 
-  @Get(':id')
+  @Get('id/:id')
   getCategoryById(@Param('id') id: string): Promise<Category> {
     return this.categoryService.findById(id);
   }
@@ -36,6 +38,11 @@ export class CategoriesController {
   @UsePipes(new ValidationPipe({ transform: true }))
   create(@Body() data: CreateCategoryDto): Promise<Category> {
     return this.categoryService.create(data);
+  }
+
+  @Get('search')
+  async searchCategories(@Query('keyword') keyword: string) {
+    return this.categoryService.searchCategoryByName(keyword);
   }
 
   @Patch(':id')
@@ -69,5 +76,15 @@ export class CategoriesController {
     @Body() data: UpdateProductDto,
   ): Promise<Category> {
     return this.categoryService.updateProduct(categoryId, productId, data);
+  }
+
+  @Delete('delete-product/:productId')
+  deleteProduct(@Param('productId') productId: string): Promise<Category> {
+    return this.categoryService.deleteProduct(productId);
+  }
+
+  @Get('products/search')
+  async searchProducts(@Query('keyword') keyword: string) {
+    return this.categoryService.searchProductsByName(keyword);
   }
 }

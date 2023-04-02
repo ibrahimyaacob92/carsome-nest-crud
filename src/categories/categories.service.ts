@@ -7,7 +7,7 @@ import {
   UpdateCategoryDto,
   UpdateProductDto,
 } from './category.dto';
-import { Category, CategoryDocument } from './category.schema';
+import { Category, CategoryDocument, Product } from './category.schema';
 
 @Injectable()
 export class CategoriesService {
@@ -59,5 +59,41 @@ export class CategoriesService {
       },
       { new: true },
     );
+  }
+
+  async deleteProduct(productId: string): Promise<Category> {
+    return this.categoryModel.findOneAndUpdate(
+      { 'products._id': productId },
+      { $pull: { products: { _id: productId } } },
+      { new: true },
+    );
+  }
+
+  async searchProductsByName(keyword: string): Promise<Product[]> {
+    const results = await this.categoryModel.aggregate([
+      { $unwind: '$products' },
+      {
+        $match: {
+          'products.name': { $regex: keyword, $options: 'i' },
+        },
+      },
+      {
+        $project: {
+          _id: '$products._id',
+          name: '$products.name',
+          description: '$products.description',
+          price: '$products.price',
+        },
+      },
+    ]);
+    return results;
+  }
+
+  async searchCategoryByName(keyword: string): Promise<Category[]> {
+    return await this.categoryModel
+      .find({
+        name: { $regex: keyword, $options: 'i' },
+      })
+      .exec();
   }
 }
